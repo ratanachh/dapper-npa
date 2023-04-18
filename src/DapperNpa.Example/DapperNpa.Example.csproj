@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-      <ProjectReference Include="..\DapperNpa.SourceGenerator\DapperNpa.SourceGenerator.csproj"
+      <ProjectReference Include="..\DapperNpa\DapperNpa.csproj"
                         ReferenceOutputAssembly="false"
                         OutputItemType="Analyzer" />
   </ItemGroup>
