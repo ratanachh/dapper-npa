@@ -15,11 +15,11 @@ namespace Roslyn.Generated;
 
 {GeneratedCodeAttribute}
 [global::System.AttributeUsageAttribute(global::System.AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
-internal sealed class EqualityComparer2Attribute : global::System.Attribute
+internal sealed class EqualityCompareAttribute : global::System.Attribute
 {{
-    public EqualityComparer2Attribute(global::System.Type type)
+    public EqualityCompareAttribute(global::System.Type type)
     {{
-        Type = type;
+        Type = type; 
     }}
 
     public global::System.Type Type {{ get; }}
@@ -32,7 +32,7 @@ internal sealed class EqualityComparer2Attribute : global::System.Attribute
 }
         private static void PostInitializationCallback(IncrementalGeneratorPostInitializationContext context)
         {
-            context.AddSource("EqualityComparerAttribute.g.cs", EqualityComparerAttribute);
+            context.AddSource("EqualityCompareAttribute.g.cs", EqualityComparerAttribute);
         }
 
     }
