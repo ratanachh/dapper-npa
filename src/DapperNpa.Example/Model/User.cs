@@ -1,7 +1,8 @@
-﻿namespace DapperNpa.Example.Model;
-
-public class User
+﻿namespace DapperNpa.Example.Model
 {
-    public Guid Id { get; set; }
-    public string Name { get; set; }
+    public class User
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+    }
 }

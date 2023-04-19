@@ -21,9 +21,10 @@ namespace DapperNpa.SourceGenerator
                 {
                     var registrations = repositoryInterfaces.Select(repositoryInterface =>
                     {
+                        var interfaceNamespace = repositoryInterface.GetParents<NamespaceDeclarationSyntax>().Name.ToString();
                         var interfaceName = repositoryInterface.Identifier.ToString();
                         var className = interfaceName.Substring(1) + "Impl";
-                        return $"services.AddTransient<{interfaceName}, {className}>();";
+                        return string.Format("services.AddScoped<global::{0}.{1}, global::{0}.{2}>();", interfaceNamespace, interfaceName, className);
                     });
                     return string.Join("\n", registrations);
                 });
