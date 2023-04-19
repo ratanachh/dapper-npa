@@ -30,7 +30,7 @@ namespace DapperNpa.SourceGenerator
 
             context.RegisterSourceOutput(repositoryRegistration, (context, source) =>
             {
-                _dependencyInjectionRegistration = string.Format(_dependencyInjectionRegistration, source);
+                _dependencyInjectionRegistration = _dependencyInjectionRegistration.Replace("###DEPENDENCY_INJECTION_SERVICES###", source);
                 context.AddSource(DependencyInjectionSourceGeneratorName, _dependencyInjectionRegistration);
             });
         }

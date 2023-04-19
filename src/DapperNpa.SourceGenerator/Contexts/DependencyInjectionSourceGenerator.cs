@@ -13,7 +13,8 @@ namespace DapperNpa.DependencyInjection
         public static global::Microsoft.Extensions.DependencyInjection.IServiceCollection AddDapperNpa(global::Microsoft.Extensions.DependencyInjection.IServiceCollection services, global::System.string connectionString)
         {{
             services.AddTransient<global::System.Data.IDbConnection>((sp) => new global::Npgsql.NpgsqlConnection(connectionString));
-            {{0}}
+            
+            ###DEPENDENCY_INJECTION_SERVICES###
             return services;
         }}
     }}
