@@ -8,6 +8,7 @@ internal sealed partial class DependencyInjectionSourceGenerator
 
 namespace DapperNpa.DependencyInjection
 {{
+    {AttributeText}
     internal static class DependencyInjectionExtension
     {{
         public static global::Microsoft.Extensions.DependencyInjection.IServiceCollection AddDapperNpa(global::Microsoft.Extensions.DependencyInjection.IServiceCollection services, global::System.string connectionString)

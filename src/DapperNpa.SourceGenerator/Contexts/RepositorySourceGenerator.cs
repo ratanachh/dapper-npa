@@ -8,6 +8,7 @@ internal sealed partial class RepositorySourceGenerator
 
 namespace DapperNpa.Repository
 {{
+    {AttributeText}
     internal sealed class UserRepositoryImpl : global::DapperNpa.Example.Repository.IUserRepository
     {{
         public global::DapperNpa.Example.Model.User GetById(global::System.Guid id)
