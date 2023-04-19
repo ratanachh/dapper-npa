@@ -1,8 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 using DapperNpa.Repository;
-using Microsoft.Extensions.DependencyInjection;
-using Npgsql;
 
 Console.WriteLine("Hello, World!");
 
