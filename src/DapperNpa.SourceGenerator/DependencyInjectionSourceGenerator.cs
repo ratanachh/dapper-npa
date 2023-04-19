@@ -1,27 +1,38 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using DapperNpa.SourceGenerator.Extensions;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace DapperNpa.SourceGenerator;
-
-[Generator(LanguageNames.CSharp)]
-internal sealed partial class DependencyInjectionSourceGenerator : IIncrementalGenerator
+namespace DapperNpa.SourceGenerator
 {
-    public void Initialize(IncrementalGeneratorInitializationContext context)
+    [Generator(LanguageNames.CSharp)]
+    internal sealed partial class DependencyInjectionSourceGenerator : IIncrementalGenerator
     {
-        context.RegisterPostInitializationOutput(PostInitializationCallback);
-        context.RegisterImplementationSourceOutput(context.CompilationProvider, ImplementationCallback);
-    }
-    
-    private static void PostInitializationCallback(IncrementalGeneratorPostInitializationContext context)
-    {
-        // context.AddSource(DependencyInjectionSourceGeneratorName, _dependencyInjectionRegistration);
-    }
+        public void Initialize(IncrementalGeneratorInitializationContext context)
+        {
+            var repositoryInterfaces = context.SyntaxProvider
+                .CreateSyntaxProvider(
+                    (node, ct) => node.IsKind(SyntaxKind.InterfaceDeclaration) && node.HasAttribute("Repository"), 
+                    (context, ct) => (InterfaceDeclarationSyntax)context.Node)
+                .Collect();
 
-    private static void ImplementationCallback(SourceProductionContext context, Compilation provider)
-    {
-        _dependencyInjectionRegistration = string.Format(_dependencyInjectionRegistration, "services.AddScoped<>();");
-        // provider.crea
-        context.AddSource(DependencyInjectionSourceGeneratorName, _dependencyInjectionRegistration);
+            var repositoryRegistration = repositoryInterfaces
+                .Select((repositoryInterfaces, ct) =>
+                {
+                    var registrations = repositoryInterfaces.Select(repositoryInterface =>
+                    {
+                        var interfaceName = repositoryInterface.Identifier.ToString();
+                        var className = interfaceName.Substring(1) + "Impl";
+                        return $"services.AddTransient<{interfaceName}, {className}>();";
+                    });
+                    return string.Join("\n", registrations);
+                });
 
+            context.RegisterSourceOutput(repositoryRegistration, (context, source) =>
+            {
+                _dependencyInjectionRegistration = string.Format(_dependencyInjectionRegistration, source);
+                context.AddSource(DependencyInjectionSourceGeneratorName, _dependencyInjectionRegistration);
+            });
+        }
     }
 }
