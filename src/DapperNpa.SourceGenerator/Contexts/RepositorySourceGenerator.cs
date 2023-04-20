@@ -10,11 +10,11 @@ internal sealed partial class RepositorySourceGenerator
 
 namespace DapperNpa.Repository
 {{
-    internal sealed class UserRepositoryImpl : global::DapperNpa.Tests.Repository.IUserRepository
+    internal sealed class UserRepositoryImpl : global::DapperNpa.Aspnet.Example.Repository.IUserRepository
     {{
-        public global::DapperNpa.Tests.Model.User GetById(global::System.Guid id)
+        public global::DapperNpa.Aspnet.Example.Model.User GetById(global::System.Guid id)
         {{
-            return new global::DapperNpa.Tests.Model.User();
+            return new global::DapperNpa.Aspnet.Example.Model.User();
         }}
     }}
 }}
