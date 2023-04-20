@@ -1,4 +1,6 @@
-﻿namespace DapperNpa.SourceGenerator;
+﻿using System;
+
+namespace DapperNpa.SourceGenerator;
 
 internal sealed partial class RepositorySourceGenerator
 {
@@ -8,11 +10,11 @@ internal sealed partial class RepositorySourceGenerator
 
 namespace DapperNpa.Repository
 {{
-    internal sealed class UserRepositoryImpl : global::DapperNpa.Example.Repository.IUserRepository
+    internal sealed class UserRepositoryImpl : global::DapperNpa.Tests.Repository.IUserRepository
     {{
-        public global::DapperNpa.Example.Model.User GetById(global::System.Guid id)
+        public global::DapperNpa.Tests.Model.User GetById(global::System.Guid id)
         {{
-            return new global::DapperNpa.Example.Model.User();
+            return new global::DapperNpa.Tests.Model.User();
         }}
     }}
 }}

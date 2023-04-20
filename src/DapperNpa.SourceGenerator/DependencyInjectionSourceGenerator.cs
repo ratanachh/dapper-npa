@@ -1,4 +1,5 @@
-﻿using DapperNpa.SourceGenerator.Extensions;
+﻿using System.Linq;
+using DapperNpa.SourceGenerator.Extensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -12,14 +13,14 @@ namespace DapperNpa.SourceGenerator
         {
             var repositoryInterfaces = context.SyntaxProvider
                 .CreateSyntaxProvider(
-                    (node, ct) => node.IsKind(SyntaxKind.InterfaceDeclaration) && node.HasAttribute("Repository"), 
-                    (context, ct) => (InterfaceDeclarationSyntax)context.Node)
+                    (node, _) => node.IsKind(SyntaxKind.InterfaceDeclaration) && node.HasAttribute("Repository"), 
+                    (syntaxContext, _) => (InterfaceDeclarationSyntax)syntaxContext.Node)
                 .Collect();
 
             var repositoryRegistration = repositoryInterfaces
-                .Select((repositoryInterfaces, ct) =>
+                .Select((interfaces, _) =>
                 {
-                    var registrations = repositoryInterfaces.Select(repositoryInterface =>
+                    var registrations = interfaces.Select(repositoryInterface =>
                     {
                         var interfaceNamespace = repositoryInterface.GetParents<NamespaceDeclarationSyntax>().Name.ToString();
                         var interfaceName = repositoryInterface.Identifier.ToString();
@@ -29,10 +30,10 @@ namespace DapperNpa.SourceGenerator
                     return string.Join("\n", registrations);
                 });
 
-            context.RegisterSourceOutput(repositoryRegistration, (context, source) =>
+            context.RegisterSourceOutput(repositoryRegistration, (productionContext, source) =>
             {
                 _dependencyInjectionRegistration = _dependencyInjectionRegistration.Replace("###DEPENDENCY_INJECTION_SERVICES###", source);
-                context.AddSource(DependencyInjectionSourceGeneratorName, _dependencyInjectionRegistration);
+                productionContext.AddSource(DependencyInjectionSourceGeneratorName, _dependencyInjectionRegistration);
             });
         }
     }

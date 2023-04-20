@@ -1,4 +1,4 @@
-﻿namespace DapperNpa.Example.Model
+﻿namespace DapperNpa.Aspnet.Example.Model
 {
     public class User
     {

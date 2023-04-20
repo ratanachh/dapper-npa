@@ -1,7 +1,7 @@
-﻿using DapperNpa.Attributes;
-using DapperNpa.Example.Model;
+﻿using DapperNpa.Aspnet.Example.Model;
+using DapperNpa.Attributes;
 
-namespace DapperNpa.Example.Repository
+namespace DapperNpa.Aspnet.Example.Repository
 {
     [Repository]
     public interface IUserRepository

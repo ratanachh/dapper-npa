@@ -5,8 +5,7 @@
         <LangVersion>10.0</LangVersion>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-
-
+        
         <IncludeBuildOutput>false</IncludeBuildOutput>
         <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
         <DevelopmentDependency>true</DevelopmentDependency>
@@ -21,4 +20,16 @@
     <!-- <ItemGroup>
         <None Include="$(OutputPath)\netstandard2.0\$(AssemblyName).dll" Pack="false" PackagePath="analyzers/dotnet/cs" Visible="false" />
     </ItemGroup> -->
+
+    <Target Name="SpicNSpan" AfterTargets="Clean"> <!-- common vars https://msdn.microsoft.com/en-us/library/c02as0cs.aspx?f=255&MSPPError=-2147217396 -->
+        <RemoveDir Directories="$(TargetDir)" /> <!-- bin -->
+        <RemoveDir Directories="$(ProjectDir)$(BaseIntermediateOutputPath)" /> <!-- obj -->
+        <Exec Command="dotnet restore" />
+    </Target>
+    
+    <ItemGroup>
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+            <_Parameter1>DapperNpa.Tests</_Parameter1>
+        </AssemblyAttribute>
+    </ItemGroup>
 </Project>

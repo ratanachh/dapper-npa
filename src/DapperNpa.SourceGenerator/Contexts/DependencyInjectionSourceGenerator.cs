@@ -1,4 +1,6 @@
-﻿namespace DapperNpa.SourceGenerator;
+﻿using System;
+
+namespace DapperNpa.SourceGenerator;
 
 internal sealed partial class DependencyInjectionSourceGenerator
 {
@@ -10,7 +12,7 @@ namespace DapperNpa.DependencyInjection
 {{
     internal static class DependencyInjectionExtension
     {{
-        public static global::Microsoft.Extensions.DependencyInjection.IServiceCollection AddDapperNpa(global::Microsoft.Extensions.DependencyInjection.IServiceCollection services, global::System.string connectionString)
+        public static global::Microsoft.Extensions.DependencyInjection.IServiceCollection AddDapperNpa(this global::Microsoft.Extensions.DependencyInjection.IServiceCollection services, string connectionString)
         {{
             services.AddTransient<global::System.Data.IDbConnection>((sp) => new global::Npgsql.NpgsqlConnection(connectionString));
             
@@ -20,5 +22,5 @@ namespace DapperNpa.DependencyInjection
     }}
 }}
 ";
-    
+
 }
