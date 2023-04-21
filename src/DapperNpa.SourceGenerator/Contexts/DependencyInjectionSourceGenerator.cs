@@ -16,7 +16,7 @@ namespace DapperNpa.DependencyInjection
         {{
             services.AddTransient<global::System.Data.IDbConnection>((sp) => new global::Npgsql.NpgsqlConnection(connectionString));
             
-            ###DEPENDENCY_INJECTION_SERVICES###
+            //__DEPENDENCY_INJECTION_SERVICES__
             return services;
         }}
     }}

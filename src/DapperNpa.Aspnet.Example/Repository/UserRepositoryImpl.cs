@@ -2,7 +2,7 @@
 
 namespace DapperNpa.Aspnet.Example.Repository
 {
-    public class UserRepositoryImpl : IUserRepository
+    public class IUserRepositoryImpl : IUserRepository
     {
         public User GetById(Guid id)
         {
