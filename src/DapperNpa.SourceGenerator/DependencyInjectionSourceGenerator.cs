@@ -1,8 +1,8 @@
-﻿using System.Diagnostics;
-using DapperNpa.SourceGenerator.Extensions;
+﻿using DapperNpa.SourceGenerator.Extensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Collections.Immutable;
 
 namespace DapperNpa.SourceGenerator
 {
@@ -11,42 +11,24 @@ namespace DapperNpa.SourceGenerator
     {
         public void Initialize(IncrementalGeneratorInitializationContext context)
         {
-            var provider = GetInterfacesSyntaxProvider(context).Collect();
+            var provider = GetInterfacesSyntaxProvider(context);
 
-            var repositoryRegistration = provider
-                .Select((interfaces, _) =>
-                {
-                    var registrations = interfaces.Select(repositoryInterface =>
-                    {
-                        var interfaceNamespace = repositoryInterface.GetParents<NamespaceDeclarationSyntax>().Name.ToString();
-                        var interfaceName = string.Format("{0}.{1}", interfaceNamespace, repositoryInterface.Identifier.ToString());
-                        var className = string.Format("{0}.{1}", interfaceNamespace, interfaceName + "Impl");
+            var compilation = context.CompilationProvider.Combine(provider.Collect());
 
-                        
-
-                        CentralStoreContext.Repository.Interfaces.Add(new Interface { 
-                            DeclarationSyntax = repositoryInterface,
-                            Name = interfaceName,
-                            Namespace = interfaceNamespace,
-                            ImplementationClassName = className,
-                        });
-                        return string.Format("services.AddScoped<global::{0}, global::{1}>();", interfaceName, className);
-                    });
-                    return string.Join("\n", registrations);
-                });
-
-            context.RegisterSourceOutput(repositoryRegistration, RegisterDependencyOutput);
+            context.RegisterSourceOutput(compilation, (spc, source) => Execute(spc, source.Left, source.Right));
         }
 
-
-        private void RegisterDependencyOutput(SourceProductionContext context, string source)
+        private void Execute(SourceProductionContext context, Compilation compilation, ImmutableArray<InterfaceDeclarationSyntax> typeList)
         {
-            _dependencyInjectionRegistration = _dependencyInjectionRegistration.Replace("//__DEPENDENCY_INJECTION_SERVICES__", source);
-            if (!Debugger.IsAttached)
-            {
-                Debugger.Launch();
-            }
+            var repositoryRegistration = typeList
+                .Select(repositoryInterface =>
+                {
+                    var interfaceNamespace = repositoryInterface.GetParents<NamespaceDeclarationSyntax>().Name.ToString();
+                    var interfaceName = string.Format("{0}.{1}", interfaceNamespace, repositoryInterface.Identifier.ToString());
+                    return string.Format("services.AddScoped<global::{0}, global::{1}>();", interfaceName, interfaceName + "Impl");
+                });
 
+            _dependencyInjectionRegistration = _dependencyInjectionRegistration.Replace("//__DEPENDENCY_INJECTION_SERVICES__", string.Join("\n", repositoryRegistration));
             context.AddSource(DependencyInjectionSourceGeneratorName, _dependencyInjectionRegistration);
         }
 
