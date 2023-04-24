@@ -73,7 +73,11 @@ internal sealed partial class RepositorySourceGenerator : IIncrementalGenerator
                     ? compilation.GetFullyQualifiedName(methodDeclaration)
                     : ((PredefinedTypeSyntax) methodDeclaration.ReturnType).Keyword.ValueText;
                 var identifier = methodDeclaration.Identifier;
-                var parameters = methodDeclaration.ParameterList;
+                if (!Debugger.IsAttached)
+                {
+                    Debugger.Launch();
+                }
+                var parameters = methodDeclaration.ParameterList.Parameters;
 
                 var queryAttribute = methodDeclaration.AttributeLists
                     .SelectMany(al => al.Attributes)
@@ -82,24 +86,17 @@ internal sealed partial class RepositorySourceGenerator : IIncrementalGenerator
                 var returnKeyword = returnType != "void" ? "return" : string.Empty;
 
                 method = $$"""
-                    {{modifier}} global::{{returnType}} {{identifier}}(Guid id) {
+                    {{modifier}} global::{{returnType}} {{identifier}}({{parameters}}) {
                         {{returnKeyword}} _connection.Query<global::{{returnType}}>();
                     }
                 """;
                 if (queryAttribute != null)
                 {
-                    var queryArguments = queryAttribute
-                        .ArgumentList?
-                        .Arguments
-                        .OfType<ArgumentListSyntax>()
-                        .SelectMany(a => a.ToFullString());
-                    
+                    var arguments = queryAttribute.ArgumentList!.Arguments;
+                    var sql = arguments.ElementAt(0).Expression.ToString().Trim('\"');
                 }
 
-                if (!Debugger.IsAttached)
-                {
-                    Debugger.Launch();
-                }
+                
             }
 
         }
