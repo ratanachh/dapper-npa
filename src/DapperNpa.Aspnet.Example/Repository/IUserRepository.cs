@@ -7,6 +7,6 @@ namespace DapperNpa.Aspnet.Example.Repository
     public interface IUserRepository
     {
         [Query(sql: "SELECT * FROM users WHERE id = @id")]
-        User GetById(Guid id);
+        public User GetById(Guid id);
     }
 }

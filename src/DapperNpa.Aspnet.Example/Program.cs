@@ -1,7 +1,6 @@
+
 var builder = WebApplication.CreateBuilder(args);
-
-
-//builder.Services.AddDapperNpa();
+var con = builder.Configuration.GetConnectionString("default");
 var app = builder.Build();
 
 

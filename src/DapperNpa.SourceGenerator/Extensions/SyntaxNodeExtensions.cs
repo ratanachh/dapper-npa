@@ -1,8 +1,6 @@
-using System;
-using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Diagnostics;
 
 namespace DapperNpa.SourceGenerator.Extensions
 {
@@ -20,17 +18,26 @@ namespace DapperNpa.SourceGenerator.Extensions
             var parent = node;
             while (true)
             {
-                if (parent == null) 
+                switch (parent)
                 {
-                   throw new Exception("Can't get namespace!");
+                    case null:
+                        throw new Exception("Can't get namespace!");
+                    case T t:
+                        return t;
+                    default:
+                        parent = parent.Parent;
+                        break;
                 }
-
-                if (parent is T t) {
-                    return t;
-                }
-
-                parent = parent.Parent;
             }
+        }
+
+        public static IncrementalValuesProvider<T> GetSyntaxProvider<T>(this IncrementalGeneratorInitializationContext context, string attributeName) where T : SyntaxNode
+        {
+            return context.SyntaxProvider
+                .CreateSyntaxProvider(
+                    predicate: (node, _) => node is T && node.HasAttribute(attributeName),
+                    transform: (syntaxContext, _) => (T)syntaxContext.Node)
+                .Where(m => m is not null);
         }
     }
 }
