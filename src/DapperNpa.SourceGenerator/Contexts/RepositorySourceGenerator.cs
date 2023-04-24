@@ -11,9 +11,16 @@ namespace __NAMESPACE__
 {
     internal sealed class __CLASS__ : global::__INTERFACE___
     {
+        private readonly global::System.Data.IDbConnection _connection;
+        public __CLASS__(global::System.Data.IDbConnection connection)
+        {
+            _connection = connection;
+        }
+
+        #region Generated implementation methods
         __IMPLEMENTATION_METHODS__
+        #endregion
     }
 }
 """;
-    
 }

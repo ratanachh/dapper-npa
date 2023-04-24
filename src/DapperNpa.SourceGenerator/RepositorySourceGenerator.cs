@@ -65,19 +65,43 @@ internal sealed partial class RepositorySourceGenerator : IIncrementalGenerator
 
         if (information.Class == "IUserRepositoryImpl")
         {
-            var methods = information.Syntax.Members;
-
+            var methods = information.Syntax.Members.Select(m => (MethodDeclarationSyntax)m);
             foreach ( var methodDeclaration in methods)
             {
-                var modifier = "public";
-                var returnType = methodDeclaration.ReturnType;
-                var identifier = methodDeclaration;
+                var modifier = methodDeclaration.Modifiers;
+                var returnType = methodDeclaration.ReturnType is IdentifierNameSyntax
+                    ? compilation.GetFullyQualifiedName(methodDeclaration)
+                    : ((PredefinedTypeSyntax) methodDeclaration.ReturnType).Keyword.ValueText;
+                var identifier = methodDeclaration.Identifier;
+                var parameters = methodDeclaration.ParameterList;
+
+                var queryAttribute = methodDeclaration.AttributeLists
+                    .SelectMany(al => al.Attributes)
+                    .FirstOrDefault(a => a.Name.ToString() == "Query");
+
+                var returnKeyword = returnType != "void" ? "return" : string.Empty;
+
+                method = $$"""
+                    {{modifier}} global::{{returnType}} {{identifier}}(Guid id) {
+                        {{returnKeyword}} _connection.Query<global::{{returnType}}>();
+                    }
+                """;
+                if (queryAttribute != null)
+                {
+                    var queryArguments = queryAttribute
+                        .ArgumentList?
+                        .Arguments
+                        .OfType<ArgumentListSyntax>()
+                        .SelectMany(a => a.ToFullString());
+                    
+                }
+
                 if (!Debugger.IsAttached)
                 {
                     Debugger.Launch();
                 }
             }
-            
+
         }
 
         var output = RepositoryImplementationTemplate

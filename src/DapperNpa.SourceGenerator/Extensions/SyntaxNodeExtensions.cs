@@ -1,4 +1,5 @@
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Diagnostics;
 
@@ -38,6 +39,22 @@ namespace DapperNpa.SourceGenerator.Extensions
                     predicate: (node, _) => node is T && node.HasAttribute(attributeName),
                     transform: (syntaxContext, _) => (T)syntaxContext.Node)
                 .Where(m => m is not null);
+        }
+
+        public static string GetFullyQualifiedName(this Compilation compilation, MethodDeclarationSyntax methodDeclaration)
+        {
+            // get the Semantic Model for the syntax tree of the method declaration
+            var semanticModel = compilation.GetSemanticModel(methodDeclaration.SyntaxTree);
+
+            // get the symbol for the return type of the method
+            var returnTypeSymbol = semanticModel.GetTypeInfo(methodDeclaration.ReturnType).Type;
+
+            // get the fully qualified name of the return type symbol
+            
+            return returnTypeSymbol.ToDisplayString(
+                new SymbolDisplayFormat(
+                    typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces)
+            );
         }
     }
 }
