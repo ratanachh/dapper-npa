@@ -100,10 +100,10 @@ internal sealed partial class RepositorySourceGenerator : IIncrementalGenerator
                     _ => $", new {{ {string.Join(",", parameterInfos.Select(p => $"@{p.Name} = {p.Name}"))} }}",
                 };
 
-                if (!Debugger.IsAttached)
-                {
-                    Debugger.Launch();
-                }
+                //if (!Debugger.IsAttached)
+                //{
+                //    Debugger.Launch();
+                //}
 
                 methods.Add(MethodImplementationTemplate
                     .Replace("__MODIFIER__", $"{modifier}")
