@@ -98,6 +98,10 @@ namespace DapperNpa.SourceGenerator.Extensions
                         return "HashSet";
                     }
                 }
+                else if (namedTypeSymbol.IsReferenceType)
+                {
+                    return $"{namedTypeSymbol.SpecialType}";
+                }
             }
             else
             {

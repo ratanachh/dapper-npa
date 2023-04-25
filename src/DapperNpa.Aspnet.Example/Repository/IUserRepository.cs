@@ -11,5 +11,8 @@ namespace DapperNpa.Aspnet.Example.Repository
 
         [Query(sql: "INSERT INTO users (id, name) VALUES(@id, @name);")]
         public void Insert(User user);
+
+        [Query(sql: "SELCT * FROM users;")]
+        public List<User> GetAll();
     }
 }
