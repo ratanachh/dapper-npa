@@ -2,6 +2,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Diagnostics;
+using System.Reflection.Metadata;
 
 namespace DapperNpa.SourceGenerator.Extensions
 {
@@ -51,10 +52,58 @@ namespace DapperNpa.SourceGenerator.Extensions
 
             // get the fully qualified name of the return type symbol
             
-            return returnTypeSymbol.ToDisplayString(
+            return returnTypeSymbol!.ToDisplayString(
                 new SymbolDisplayFormat(
                     typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces)
             );
+        }
+
+        public static string GetFullyQualifiedName(this Compilation compilation, ParameterSyntax parameter)
+        {
+            // get the Semantic Model for the syntax tree of the method declaration
+            var semanticModel = compilation.GetSemanticModel(parameter.SyntaxTree);
+            var parameterTypeSymbol = semanticModel.GetSymbolInfo(parameter.Type!).Symbol;
+            return parameterTypeSymbol!.ToDisplayString(
+                new SymbolDisplayFormat(
+                    typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces));
+        }
+
+        public static string GetTypeString(this Compilation compilation, MethodDeclarationSyntax methodDeclaration)
+        {
+            // get the Semantic Model for the syntax tree of the method declaration
+            var semanticModel = compilation.GetSemanticModel(methodDeclaration.SyntaxTree);
+
+            // get the symbol for the return type of the method
+            var returnTypeSymbol = semanticModel.GetTypeInfo(methodDeclaration.ReturnType).Type;
+
+            if (returnTypeSymbol.TypeKind == TypeKind.Array)
+            {
+                return "Array";
+            }
+            else if (returnTypeSymbol is INamedTypeSymbol namedTypeSymbol)
+            {
+                if (namedTypeSymbol.IsGenericType)
+                {
+                    var genericTypeDefinition = namedTypeSymbol.OriginalDefinition;
+                    if (genericTypeDefinition.Equals(compilation.GetTypeByMetadataName("System.Collections.Generic.List`1")))
+                    {
+                        return "List";
+                    }
+                    else if (genericTypeDefinition.Equals(compilation.GetTypeByMetadataName("System.Collections.Generic.Dictionary`2")))
+                    {
+                        return "Dictionary";
+                    }
+                    else if (genericTypeDefinition.Equals(compilation.GetTypeByMetadataName("System.Collections.Generic.HashSet`1")))
+                    {
+                        return "HashSet";
+                    }
+                }
+            }
+            else
+            {
+                return "Object";
+            }
+            return string.Empty;
         }
     }
 }
