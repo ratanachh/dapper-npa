@@ -23,7 +23,8 @@ namespace DapperNpa.SourceGenerator
             var repositoryRegistration = typeList
                 .Select(repositoryInterface =>
                 {
-                    var interfaceNamespace = repositoryInterface.GetParents<NamespaceDeclarationSyntax>().Name.ToString();
+                    var @namespace = repositoryInterface.Parent is FileScopedNamespaceDeclarationSyntax ? repositoryInterface.GetParents<FileScopedNamespaceDeclarationSyntax>().Name : repositoryInterface.GetParents<NamespaceDeclarationSyntax>().Name;
+                    var interfaceNamespace = @namespace.ToString();
                     var interfaceName = $"{interfaceNamespace}.{repositoryInterface.Identifier}";
                     return $"services.AddScoped<global::{interfaceName}, global::{interfaceName + "Impl"}>();";
                 });
