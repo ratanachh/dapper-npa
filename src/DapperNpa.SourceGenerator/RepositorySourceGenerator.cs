@@ -49,13 +49,15 @@ internal sealed partial class RepositorySourceGenerator : IIncrementalGenerator
                 .SelectMany(al => al.Attributes)
                 .FirstOrDefault(a => a.Name.ToString() == "Query");
 
+            var identifier = methodDeclaration.Identifier;
             if (queryAttribute != null)
             {
                 var modifier = methodDeclaration.Modifiers;
-                var returnType = methodDeclaration.ReturnType is IdentifierNameSyntax
+                string[] objectType = { "List", "Dictionary", "HashSet", "Object" };
+                var methodReturnType = compilation.GetTypeString(methodDeclaration);
+                var returnType = objectType.Contains(methodReturnType) 
                     ? $"global::{compilation.GetFullyQualifiedName(methodDeclaration)}"
                     : ((PredefinedTypeSyntax)methodDeclaration.ReturnType).Keyword.ValueText;
-                var identifier = methodDeclaration.Identifier;
 
                 var parametersSyntax = methodDeclaration.ParameterList.Parameters;
                 List<ParameterInfo> parameterInfos = new();
@@ -100,10 +102,10 @@ internal sealed partial class RepositorySourceGenerator : IIncrementalGenerator
                     _ => $", new {{ {string.Join(",", parameterInfos.Select(p => $"@{p.Name} = {p.Name}"))} }}",
                 };
 
-                //if (!Debugger.IsAttached)
-                //{
-                //    Debugger.Launch();
-                //}
+                if (!Debugger.IsAttached)
+                {
+                    Debugger.Launch();
+                }
 
                 methods.Add(MethodImplementationTemplate
                     .Replace("__MODIFIER__", $"{modifier}")
@@ -115,6 +117,19 @@ internal sealed partial class RepositorySourceGenerator : IIncrementalGenerator
                     .Replace("__RESULTRETURNTYPE__", resultReturnType)
                     .Replace("__SQLIMPLEMENTATION__", $"{sql}{queryArgument}")
                     .Replace("__RETURN_RESULT__", $"{resultReturn}"));
+            } 
+            else
+            {
+                var desc = new DiagnosticDescriptor (
+                    "SG0001",
+                    "No Query attribute found",
+                    "No Query attribute declared on method (" + identifier + "(...)) in interface (" + information.InterfaceFullyQualify +")",
+                    "Problem",
+                    DiagnosticSeverity.Error,
+                    true
+                    );
+                context.ReportDiagnostic(Diagnostic.Create(desc, Location.None));
+                
             }
         }
 
