@@ -76,24 +76,27 @@ namespace DapperNpa.SourceGenerator.Extensions
             // get the symbol for the return type of the method
             var returnTypeSymbol = semanticModel.GetTypeInfo(methodDeclaration.ReturnType).Type;
 
-            if (returnTypeSymbol.TypeKind == TypeKind.Array)
+            if (returnTypeSymbol?.TypeKind == TypeKind.Array)
             {
                 return "Array";
             }
-            else if (returnTypeSymbol is INamedTypeSymbol namedTypeSymbol)
+
+            if (returnTypeSymbol is INamedTypeSymbol namedTypeSymbol)
             {
                 if (namedTypeSymbol.IsGenericType)
                 {
                     var genericTypeDefinition = namedTypeSymbol.OriginalDefinition;
-                    if (genericTypeDefinition.Equals(compilation.GetTypeByMetadataName("System.Collections.Generic.List`1")))
+                    if (SymbolEqualityComparer.Default.Equals(genericTypeDefinition, compilation.GetTypeByMetadataName("System.Collections.Generic.List`1")))
                     {
                         return "List";
                     }
-                    else if (genericTypeDefinition.Equals(compilation.GetTypeByMetadataName("System.Collections.Generic.Dictionary`2")))
+
+                    if (SymbolEqualityComparer.Default.Equals(genericTypeDefinition, compilation.GetTypeByMetadataName("System.Collections.Generic.Dictionary`2")))
                     {
                         return "Dictionary";
                     }
-                    else if (genericTypeDefinition.Equals(compilation.GetTypeByMetadataName("System.Collections.Generic.HashSet`1")))
+
+                    if (SymbolEqualityComparer.Default.Equals(genericTypeDefinition, compilation.GetTypeByMetadataName("System.Collections.Generic.HashSet`1")))
                     {
                         return "HashSet";
                     }

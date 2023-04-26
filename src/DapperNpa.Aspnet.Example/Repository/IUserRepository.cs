@@ -11,5 +11,12 @@ namespace DapperNpa.Aspnet.Example.Repository
 
         [Query(sql: "INSERT INTO users (id, name) VALUES(@id, @name);")]
         public void Insert(User user);
+
+        [Query(sql: "DELETE FROM users WHERE id = @id")]
+        public bool Delete(Guid id);
+
+        [Query(sql: "UPDAT users set name = @name WHERE id = @id")]
+        public bool Update(Guid id, string name);
+
     }
 }
